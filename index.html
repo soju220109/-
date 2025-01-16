@@ -3,28 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RSSフィードの表示</title>
+    <title>Release Note</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+        }
+
+        .infomation {
+            background: rgba(128, 128, 128, 0.8);
+            padding: 15px 0;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .infoText {
+            display: inline-block;
+            white-space: nowrap;
+            animation: infoAnimation 20s linear infinite;
+        }
+
+        .infoText a {
+            text-decoration: none;
+            color: #333;
+            margin-right: 1rem;
+            font-size: 16px;
+        }
+
+        .infoText a:hover {
+            text-decoration: underline;
+        }
+
+        /* 横に流れていくアニメーション */
+        @keyframes infoAnimation {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Release Note</h1>
-    <ul id="rss-feed"></ul>
+    <div class="infomation">
+        <div class="infoText" id="rss-feed">
+            <!-- RSSフィードがここに表示されます -->
+        </div>
+    </div>
 
     <script>
         // RSSフィードを読み込む関数
         function loadRSSFeed() {
-            fetch("https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnote.com%2Fsoju_cfe%2Frss") // RSSフィードのURL
+            fetch("https://rss2json.com/api.json?rss_url=https://note.com/soju_cfe/rss") // RSSフィードのURL
                 .then(response => response.json())
                 .then(data => {
-                    const feedList = document.getElementById("rss-feed");
-                    feedList.innerHTML = ''; // 既存のリストをクリア
+                    const feedContainer = document.getElementById("rss-feed");
+                    feedContainer.innerHTML = ''; // 既存のリストをクリア
 
-                    // RSSフィードの各アイテムをリストとして追加
-                    data.items.forEach(item => {
+                    // RSSフィードのアイテムを最大10個表示
+                    data.items.slice(0, 10).forEach(item => {
                         const title = item.title;
                         const link = item.link;
-                        const listItem = document.createElement("li");
-                        listItem.innerHTML = `<a href="${link}" target="_blank">${title}</a>`;
-                        feedList.appendChild(listItem);
+                        const pubDate = new Date(item.pubDate).toLocaleDateString('ja-JP', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        });
+
+                        const feedItem = document.createElement("p");
+                        feedItem.innerHTML = `
+                            <a href="${link}" target="_blank">${pubDate} ${title}</a>
+                        `;
+                        feedContainer.appendChild(feedItem);
                     });
                 })
                 .catch(error => {
