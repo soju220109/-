@@ -3,29 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Note RSS Feed</title>
+    <title>RSSフィードの表示</title>
 </head>
 <body>
     <h1>Release Note</h1>
     <ul id="rss-feed"></ul>
+
     <script>
-        // RSSフィードを取得して表示するJavaScript
-        fetch("https://note.com/soju_cfe/rss")
-            .then(response => response.text())
-            .then(data => {
-                const parser = new DOMParser();
-                const xml = parser.parseFromString(data, "application/xml");
-                const items = xml.querySelectorAll("item");
-                const feedList = document.getElementById("rss-feed");
-                items.forEach(item => {
-                    const title = item.querySelector("title").textContent;
-                    const link = item.querySelector("link").textContent;
-                    const listItem = document.createElement("li");
-                    listItem.innerHTML = `<a href="${link}" target="_blank">${title}</a>`;
-                    feedList.appendChild(listItem);
+        // RSSフィードを読み込む関数
+        function loadRSSFeed() {
+            fetch("https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnote.com%2Fsoju_cfe%2Frss") // RSSフィードのURL
+                .then(response => response.json())
+                .then(data => {
+                    const feedList = document.getElementById("rss-feed");
+                    feedList.innerHTML = ''; // 既存のリストをクリア
+
+                    // RSSフィードの各アイテムをリストとして追加
+                    data.items.forEach(item => {
+                        const title = item.title;
+                        const link = item.link;
+                        const listItem = document.createElement("li");
+                        listItem.innerHTML = `<a href="${link}" target="_blank">${title}</a>`;
+                        feedList.appendChild(listItem);
+                    });
+                })
+                .catch(error => {
+                    console.error("RSSフィードの読み込みに失敗しました:", error);
                 });
-            })
-            .catch(error => console.error("Error loading RSS feed:", error));
+        }
+
+        // ページが読み込まれた時にRSSフィードを読み込む
+        window.onload = loadRSSFeed;
     </script>
 </body>
 </html>
