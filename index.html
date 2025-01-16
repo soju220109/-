@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note RSS Feed</title>
+</head>
+<body>
+    <h1>Release Note</h1>
+    <ul id="rss-feed"></ul>
+    <script>
+        // RSSフィードを取得して表示するJavaScript
+        fetch("https://note.com/soju_cfe/rss")
+            .then(response => response.text())
+            .then(data => {
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(data, "application/xml");
+                const items = xml.querySelectorAll("item");
+                const feedList = document.getElementById("rss-feed");
+                items.forEach(item => {
+                    const title = item.querySelector("title").textContent;
+                    const link = item.querySelector("link").textContent;
+                    const listItem = document.createElement("li");
+                    listItem.innerHTML = `<a href="${link}" target="_blank">${title}</a>`;
+                    feedList.appendChild(listItem);
+                });
+            })
+            .catch(error => console.error("Error loading RSS feed:", error));
+    </script>
+</body>
+</html>
