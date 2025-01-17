@@ -13,23 +13,23 @@
         }
 
         .infomation {
-            background: rgba(200, 200, 200, 0.9);
-            padding: 0.5px 0;
+            background: rgba(200, 200, 200, 0.9); /* 背景を明るい色に変更 */
+            padding: 10px 0; /* 高さを低くするためにパディングを調整 */
             margin: 0;
             overflow: hidden;
             position: relative;
         }
 
         .infoText {
-            display: inline-block;
+            display: flex; /* 横並びに配置 */
             white-space: nowrap;
-            animation: infoAnimation 20s linear infinite;
+            animation: infoAnimation 40s linear infinite; /* スクロールスピードを遅く設定 */
+            gap: 5rem; /* 各記事の間にスペースを追加 */
         }
 
         .infoText a {
             text-decoration: none;
             color: #333;
-            margin-right: 1rem;
             font-size: 16px;
         }
 
@@ -74,10 +74,13 @@
                             day: '2-digit'
                         });
 
-                        const feedItem = document.createElement("p");
-                        feedItem.innerHTML = `
-                            <a href="${link}" target="_blank">${pubDate} ${title}</a>
-                        `;
+                        const feedItem = document.createElement("a");
+                        feedItem.href = link;
+                        feedItem.onclick = function(event) {
+                            event.preventDefault();
+                            window.open(link, "popup", "width=800,height=600,scrollbars=yes,resizable=yes,top=" + (window.innerHeight - 450) + ",left=" + (window.innerWidth - 650));
+                        };
+                        feedItem.textContent = `${pubDate} ${title}`;
                         feedContainer.appendChild(feedItem);
                     });
                 })
